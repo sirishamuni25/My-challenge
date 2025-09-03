@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mood Journey</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #89f7fe, #66a6ff);
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+
+    .container {
+      max-width: 700px;
+      background: white;
+      margin: 0 auto;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 5px;
+    }
+
+    select, textarea {
+      width: 100%;
+      padding: 10px;
+      font-size: 1em;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #007BFF;
+      color: white;
+      padding: 12px 20px;
+      font-size: 1em;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .entries {
+      margin-top: 30px;
+    }
+
+    .entry {
+      background: #f1f1f1;
+      border-left: 5px solid #007BFF;
+      padding: 15px;
+      margin-bottom: 12px;
+      border-radius: 6px;
+    }
+
+    .entry strong {
+      font-size: 1.1em;
+    }
+
+    .entry small {
+      color: #777;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 0.9em;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>🌤 Mood Journey</h1>
+
+    <label for="mood">How are you feeling?</label>
+    <select id="mood">
+      <option value="😊 Happy">😊 Happy</option>
+      <option value="😢 Sad">😢 Sad</option>
+      <option value="😐 Neutral">😐 Neutral</option>
+      <option value="😠 Angry">😠 Angry</option>
+      <option value="😴 Tired">😴 Tired</option>
+      <option value="😄 Excited">😄 Excited</option>
+    </select>
+
+    <label for="note">Write about your day:</label>
+    <textarea id="note" rows="4" placeholder="Write something meaningful..."></textarea>
+
+    <button onclick="saveEntry()">Save Entry</button>
+
+    <div class="entries" id="entries">
+      <h3>📖 Mood Journal</h3>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2025 Mood Journey. Your feelings matter 💙
+  </footer>
+
+  <script>
+    const moodEl = document.getElementById("mood");
+    const noteEl = document.getElementById("note");
+    const entriesEl = document.getElementById("entries");
+
+    // Save entry to localStorage
+    function saveEntry() {
+      const mood = moodEl.value;
+      const note = noteEl.value.trim();
+      const date = new Date().toLocaleString();
+
+      if (!note) {
+        alert("Please write something about your day.");
+        return;
+      }
+
+      const entry = { mood, note, date };
+
+      let entries = JSON.parse(localStorage.getItem("moodJourneyEntries")) || [];
+      entries.unshift(entry); // Add to beginning
+      localStorage.setItem("moodJourneyEntries", JSON.stringify(entries));
+
+      noteEl.value = ""; // Clear textarea
+      renderEntries(); // Refresh display
+    }
+
+    // Display all entries
+    function renderEntries() {
+      const entries = JSON.parse(localStorage.getItem("moodJourneyEntries")) || [];
+
+      if (entries.length === 0) {
+        entriesEl.innerHTML = "<h3>📖 Mood Journal</h3><p>No entries yet. Start by adding one!</p>";
+        return;
+      }
+
+      entriesEl.innerHTML = "<h3>📖 Mood Journal</h3>" + entries.map(entry => `
+        <div class="entry">
+          <strong>${entry.mood}</strong>
+          <small>${entry.date}</small>
+          <p>${entry.note}</p>
+        </div>
+      `).join("");
+    }
+
+    // Load entries on page load
+    renderEntries();
+  </script>
+
+</body>
+</html>
