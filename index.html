@@ -31,6 +31,7 @@
     label {
       display: block;
       margin: 10px 0 5px;
+      font-weight: 600;
     }
 
     select, textarea {
@@ -40,6 +41,8 @@
       margin-bottom: 15px;
       border-radius: 6px;
       border: 1px solid #ccc;
+      box-sizing: border-box;
+      resize: vertical;
     }
 
     button {
@@ -51,6 +54,7 @@
       border-radius: 6px;
       cursor: pointer;
       width: 100%;
+      transition: background-color 0.3s ease;
     }
 
     button:hover {
@@ -62,11 +66,12 @@
     }
 
     .entry {
-      background: #f1f1f1;
+      background: #f9f9f9;
       border-left: 5px solid #007BFF;
       padding: 15px;
       margin-bottom: 12px;
       border-radius: 6px;
+      word-wrap: break-word;
     }
 
     .entry strong {
@@ -105,10 +110,11 @@
     <label for="note">Write about your day:</label>
     <textarea id="note" rows="4" placeholder="Write something meaningful..."></textarea>
 
-    <button onclick="saveEntry()">Save Entry</button>
+    <button type="button" id="saveBtn">Save Entry</button>
 
     <div class="entries" id="entries">
       <h3>📖 Mood Journal</h3>
+      <p>No entries yet. Start by adding one!</p>
     </div>
   </div>
 
@@ -120,8 +126,8 @@
     const moodEl = document.getElementById("mood");
     const noteEl = document.getElementById("note");
     const entriesEl = document.getElementById("entries");
+    const saveBtn = document.getElementById("saveBtn");
 
-    // Save entry to localStorage
     function saveEntry() {
       const mood = moodEl.value;
       const note = noteEl.value.trim();
@@ -135,14 +141,13 @@
       const entry = { mood, note, date };
 
       let entries = JSON.parse(localStorage.getItem("moodJourneyEntries")) || [];
-      entries.unshift(entry); // Add to beginning
+      entries.unshift(entry); // Add newest first
       localStorage.setItem("moodJourneyEntries", JSON.stringify(entries));
 
       noteEl.value = ""; // Clear textarea
       renderEntries(); // Refresh display
     }
 
-    // Display all entries
     function renderEntries() {
       const entries = JSON.parse(localStorage.getItem("moodJourneyEntries")) || [];
 
@@ -151,14 +156,19 @@
         return;
       }
 
-      entriesEl.innerHTML = "<h3>📖 Mood Journal</h3>" + entries.map(entry => `
+      const html = entries.map(entry => `
         <div class="entry">
           <strong>${entry.mood}</strong>
           <small>${entry.date}</small>
-          <p>${entry.note}</p>
+          <p>${entry.note.replace(/\n/g, '<br>')}</p>
         </div>
       `).join("");
+
+      entriesEl.innerHTML = "<h3>📖 Mood Journal</h3>" + html;
     }
+
+    // Event listener (better practice than inline onclick)
+    saveBtn.addEventListener("click", saveEntry);
 
     // Load entries on page load
     renderEntries();
